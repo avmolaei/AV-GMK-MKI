@@ -29,11 +29,7 @@
 #define KEY_MOD_4 0xF5  //cycle between compact display mode (one line for RTC time, one for wpm, one for temperature, one for humidity), normal display mode (just the temps and humidity) and fun mode (just displays random things "hollywood" style)
 #define KEY_MOD_5 0xF4  //not assigned
 #define KEY_MOD_6 0xF3  //not assigned
-
-
-
-
-
+#define KEY_MOD_7 0xF4
 
 
 // Define the IO expander objects
@@ -44,65 +40,66 @@ const int ledPin = 0;  // the number of the neopixel strip
 const int numLeds = 95;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(numLeds, ledPin, NEO_GRB + NEO_KHZ800);
 
-const uint8_t numKeys = 40; // Assuming each expander has 40 pins
+const uint8_t numKeys = 40;  // Assuming each expander has 40 pins
 
 const int DEBOUNCE_DELAY = 200;
 
 
 
 char keyMapLEFT[numKeys] = {
-    KEY_ESC,          '`',  KEY_TAB,            KEY_CAPS_LOCK,      KEY_LEFT_SHIFT,             KEY_LEFT_CTRL,
-                      '1',                    'q',                'a',                KEY_CHEVRON_L,              KEY_LEFT_GUI,
-    KEY_F1,           '2',                    'w',                's',                'z',                        KEY_LEFT_ALT,
-    KEY_F2,           '3',                    'e',                'd',                'x',                        KEY_FUNCTION,
-    KEY_F3,           '4',                    'r',                'f',                'c',                        
-    KEY_F4,           '5',                    't',                'g',                'v',            
-    KEY_F5,           '6',                    'y',                'h',                'b',
-    KEY_F6,           '7'                    
+  KEY_ESC, '`', KEY_TAB, KEY_CAPS_LOCK, KEY_LEFT_SHIFT, KEY_LEFT_CTRL,
+  '1', 'q', 'a', KEY_CHEVRON_L, KEY_LEFT_GUI,
+  KEY_F1, '2', 'w', 's', 'z', KEY_LEFT_ALT,
+  KEY_F2, '3', 'e', 'd', 'x', KEY_FUNCTION,
+  KEY_F3, '4', 'r', 'f', 'c',
+  KEY_F4, '5', 't', 'g', 'v',
+  KEY_F5, '6', 'y', 'h', 'b',
+  KEY_F6, '7'
 };
-
 
 char keyMapLEFTALT[numKeys] = {
-  KEY_ESC,          '`',  KEY_TAB,            KEY_CAPS_LOCK,      KEY_LEFT_SHIFT,             KEY_LEFT_CTRL,
-                    '1',                    'q',                'a',                KEY_CHEVRON_L,              KEY_LEFT_GUI,
-  KEY_F1,           '2',                    'w',                's',                'z',                        KEY_LEFT_ALT,
-  KEY_F2,           '3',                    'e',                'd',                'x',                        KEY_FUNCTION,
-  KEY_F3,           '4',                    'r',                'f',                'c',                        
-  KEY_F4,           '5',                    't',                'g',                'v',            
-  KEY_F5,           '6',                    'y',                'h',                'b',
-  KEY_F6,           '7'                    
+  KEY_ESC, '`', KEY_TAB, KEY_CAPS_LOCK, KEY_LEFT_SHIFT, KEY_LEFT_CTRL,
+  '1', 'q', 'a', KEY_CHEVRON_L, KEY_LEFT_GUI,
+  KEY_F1, '2', 'w', 's', 'z', KEY_LEFT_ALT,
+  KEY_F2, '3', 'e', 'd', 'x', KEY_FUNCTION,
+  KEY_F3, '4', 'r', 'f', 'c',
+  KEY_F4, '5', 't', 'g', 'v',
+  KEY_F5, '6', 'y', 'h', 'b',
+  KEY_F6, '7'
 };
-
-
 
 char keyMapNUMPAD[numKeys] = {
-  KEY_PRINT_SCREEN, KEY_SCROLL_LOCK, KEY_PAUSE, KEY_NUM_LOCK, KEY_KP_SLASH, KEY_KP_ASTERISK, KEY_KP_MINUS, KEY_F13,
-  KEY_INSERT, KEY_HOME, KEY_PAGE_UP, KEY_KP_7, KEY_KP_8, KEY_KP_9, KEY_KP_PLUS, KEY_F13,
-  KEY_DELETE, KEY_END, KEY_PAGE_DOWN, KEY_KP_4, KEY_KP_5, KEY_KP_6, KEY_KP_PLUS, KEY_F13,
-  KEY_F13, KEY_UP_ARROW, KEY_F13, KEY_KP_1, KEY_KP_2, KEY_KP_3, KEY_KP_ENTER, KEY_F13,
-  KEY_LEFT_ARROW, KEY_DOWN_ARROW, KEY_RIGHT_ARROW, KEY_KP_0, KEY_KP_0, KEY_KP_ENTER, KEY_KP_DOT, KEY_F13
+  KEY_KP_0,
+  KEY_PAGE_UP, KEY_KP_SLASH, KEY_KP_8, KEY_KP_5, KEY_KP_2,
+  KEY_PAGE_DOWN, KEY_KP_ASTERISK, KEY_KP_9, KEY_KP_6, KEY_KP_3, KEY_KP_DOT,
+  KEY_KP_MINUS, KEY_KP_PLUS, KEY_KP_ENTER
 };
 char keyMapNUMPADALT[numKeys] = {
-  KEY_PRINT_SCREEN, KEY_SCROLL_LOCK, KEY_PAUSE, KEY_NUM_LOCK, KEY_KP_SLASH, KEY_KP_ASTERISK, KEY_KP_MINUS, KEY_F13,
-  KEY_INSERT, KEY_HOME, KEY_PAGE_UP, KEY_KP_7, KEY_KP_8, KEY_KP_9, KEY_KP_PLUS, KEY_F13,
-  KEY_DELETE, KEY_END, KEY_PAGE_DOWN, KEY_MOD_4, KEY_MOD_5, KEY_MOD_6, KEY_KP_PLUS, KEY_F13,
-  KEY_F13, KEY_UP_ARROW, KEY_F13, KEY_MOD_1, KEY_MOD_2, KEY_MOD_3, KEY_KP_ENTER, KEY_F13,
-  KEY_LEFT_ARROW, KEY_DOWN_ARROW, KEY_RIGHT_ARROW, KEY_KP_0, KEY_KP_0, KEY_KP_ENTER, KEY_KP_DOT, KEY_F13
-}; 
+  KEY_KP_0,
+  KEY_PAGE_UP, KEY_KP_SLASH, KEY_KP_8, KEY_MOD_5, KEY_MOD_2,
+  KEY_HOME, KEY_KP_ASTERISK, KEY_KP_9, KEY_KP_6, KEY_MOD_3, KEY_KP_DOT,
+  KEY_MOD_6, KEY_MOD_7, KEY_KP_ENTER
+};
 char keyMapRIGHT[numKeys] = {
-  '7', '8', '9', '0', '-', '=', '[', KEY_F13,
-  KEY_F13, 'y', 'u', 'i', 'o', 'p', ']', KEY_F13,
-  KEY_BACKSPACE, 'h', 'j', 'k', 'l', ';', '\'', KEY_F13,
-  KEY_DELETE, 'b', 'n', 'm', ',', '.', '/', KEY_F13,
-  KEY_RETURN, ' ', KEY_RIGHT_ALT, KEY_RIGHT_GUI, KEY_MENU, KEY_RIGHT_CTRL, '\\', KEY_F13
-
+  'u', 'j', 'n', ' ',
+  KEY_F7, '8', 'i', 'k', 'm',
+  KEY_F8, '9', 'o', 'l', ',',
+  KEY_F9, '0', 'p', ';', '.',
+  KEY_F10, '-', '[', '\'', '/', KEY_RIGHT_ALT,
+  KEY_F11, '=', ']', '\\', KEY_RIGHT_SHIFT, KEY_MENU,
+  KEY_F12, KEY_BACKSPACE, KEY_RETURN, KEY_RIGHT_CTRL,
+  KEY_PRINT_SCREEN, KEY_NUM_LOCK, KEY_KP_7, KEY_KP_4, KEY_KP_1
 };
 char keyMapRIGHTALT[numKeys] = {
-  KEY_F7, KEY_F8, KEY_F9, KEY_F10, KEY_F11, KEY_F12, '[', KEY_F13,
-  KEY_F13, 'y', 'u', KEY_UP_ARROW, 'o', 'p', ']', KEY_F13,
-  KEY_BACKSPACE, 'h', KEY_LEFT_ARROW, KEY_DOWN_ARROW, KEY_RIGHT_ARROW, ';', '\'', KEY_F13,
-  KEY_DELETE, 'b', 'n', 'm', ',', '.', '/', KEY_F13,
-  KEY_RETURN, ' ', KEY_RIGHT_ALT, KEY_F13, KEY_F13, KEY_F13, '\\', KEY_F13
+  'u', 'j', 'n', ' ',
+  KEY_F7, '8', 'i', 'k', 'm',
+  KEY_F8, '9', 'o', 'l', ',',
+  KEY_F9, '0', 'p', ';', '.',
+  KEY_F10, '-', '[', '\'', '/', KEY_RIGHT_ALT,
+  KEY_F11, '=', ']', '\\', KEY_RIGHT_SHIFT, KEY_MENU,
+  KEY_F12, KEY_BACKSPACE, KEY_RETURN, KEY_RIGHT_CTRL,
+  KEY_PRINT_SCREEN, KEY_NUM_LOCK, KEY_KP_7, KEY_MOD_4, KEY_MOD_1
+
 };
 
 bool keyStateNP[numKeys] = { 0 };
@@ -112,15 +109,15 @@ bool keyStateR[numKeys] = { 0 };
 bool isShiftPressed = false;
 bool isCapsLockOn = false;
 bool initialDelayPassed = false;
-bool funTypingModeActive = false; 
+bool funTypingModeActive = false;
 
 unsigned long lastPressTime;
 unsigned long lastToggleTime = 0;
 uint8_t lastKeyPressed = 255;
 
 
-uint32_t lastUpdate = 0; // Last update of position
-uint16_t j = 0; // Position in the rainbow
+uint32_t lastUpdate = 0;  // Last update of position
+uint16_t j = 0;           // Position in the rainbow
 
 
 
@@ -135,15 +132,15 @@ uint32_t Wheel(byte WheelPos);
 void setup() {
 
   strip.begin();
-  strip.setBrightness(255); 
+  strip.setBrightness(10);
 
   // Initialize serial communication
   Serial.begin(9600);
-  
+
   // Initialize the IO expanders
-  NUMPAD.begin(0x23); // Adjust the address as needed
-  LEFT.begin(0x22);   // Adjust the address as needed
-  RIGHT.begin(0x21);  // Adjust the address as needed
+  NUMPAD.begin(0x23);  // Adjust the address as needed
+  LEFT.begin(0x22);    // Adjust the address as needed
+  RIGHT.begin(0x21);   // Adjust the address as needed
 
   // Set all pins as inputs
   for (uint8_t i = 0; i < numKeys; i++) {
@@ -153,7 +150,7 @@ void setup() {
   }
 }
 
-void loop() {  
+void loop() {
   rainbow(10);
   bool funcKeyPressed = ((LEFT.digitalRead(35) == 0) || (RIGHT.digitalRead(8)) == 0);
 
@@ -215,16 +212,26 @@ void checkKeys(PCA9505_06& expander, char* keyMap, char* funcKeyMap, bool* keySt
             initialDelayPassed = false;
           }
           break;
+        case KEY_MOD_1:
+        //Default zone lighting
+          break;
+        case KEY_MOD_2:
+        //rainbow wave
+          break;
         case KEY_MOD_3:
+        //green lighting
           break;
-        case KEY_MOD_4: 
-          //trackball.setRGBW(255, 0, 0, 0);
+        case KEY_MOD_4:
+        //white lighting
           break;
-        case KEY_MOD_5: 
-          //trackball.setRGBW(0, 255, 255, 0);
+        case KEY_MOD_5:
+        //off 
           break;
-        case KEY_MOD_6: 
-          //trackball.setRGBW(0, 0, 0, 255);
+        case KEY_MOD_6:
+          //brightness ctrl (-)
+          break;
+        case KEY_MOD_7:
+          //brightness ctrl (+)
           break;
 
 
@@ -266,14 +273,14 @@ void checkKeys(PCA9505_06& expander, char* keyMap, char* funcKeyMap, bool* keySt
 void rainbow(uint8_t wait) {
   uint32_t currentMillis = millis();
   if (currentMillis - lastUpdate > wait) {
-    lastUpdate = currentMillis; // Save the last update time
+    lastUpdate = currentMillis;  // Save the last update time
 
     // Only update the LED strip if the specified 'wait' time has passed
     for (uint16_t i = 0; i < strip.numPixels(); i++) {
       strip.setPixelColor(i, Wheel((i * 1 + j) & 255));
     }
     strip.show();
-    
+
     // Increment 'j', reset if it reaches 256
     if (++j >= 256) {
       j = 0;
@@ -292,5 +299,3 @@ uint32_t Wheel(byte WheelPos) {
     return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
   }
 }
-
-
