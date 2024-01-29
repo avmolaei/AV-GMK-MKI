@@ -20,6 +20,22 @@ Compatible with MX style switches.
 
 FW: only the left PCA is functional now. No RGB modes besides a default rainbow. Also fix the same shit as the AV-RK MK2
 
+Add LED modes:
+
+One mode should be off, duh. (5)
+
+One mode should be green lighting (3)
+
+One mode should be a lighting per zone (e.g one color for Fn keys, one color for alphanumeric, etc.). This is the default lighting mode upon power up (1 )
+
+One mode should be the rainbow wave.  (2)
+
+One function should allow brightnes control (+ -)
+
+One mode should be white. (4)
+
+
+
   
   
 
