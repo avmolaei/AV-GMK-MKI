@@ -6,7 +6,6 @@
 The AV-GMK MK I is the first iteration of the AVlabs AV-GMK, the AVlabs "normal Gaming Mechanical Keyboard.
 
 It differs from previous AVlabs projects by the fact that it has a normal ISO AZERTY layout. However, the alpha keys are in a ortholinear layout.
-Based on the EE and SW arch of the AV-RK MK2
 
 Epic RGB lighting powered by SK6812-mini LEDs
 
