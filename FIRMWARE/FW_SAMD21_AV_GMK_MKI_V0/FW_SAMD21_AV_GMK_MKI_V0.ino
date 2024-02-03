@@ -1,49 +1,45 @@
 #include <PCA9505_9506.h>
-#include <Keyboard.h>
-#include <Wire.h>
+#include <Keyboard.h> 
 #include <Adafruit_NeoPixel.h>
-
-
 
 //delays for the key actuation
 #define INITIAL_DELAY 250
 #define REPEAT_DELAY 5
 
-//custom keys for mouse functions
-#define MOUSE_LEFT_CLICK 0xFF
-#define MOUSE_RIGHT_CLICK 0xFE
-#define MOUSE_SCROLL_UP 0xFD
-#define MOUSE_SCROLL_DOWN 0xFC
+//values for the min and max LED brightnesses, and the step
+#define MIN_BRIGHTNESS 2  
+#define MAX_BRIGHTNESS 255
+#define BRIGHTNESS_STEP 2
 
 //custom keys
 #define KEY_FUNCTION 0xFB
 #define KEY_CHEVRON_L 236
 #define KEY_CHEVRON_R 236
-#define KEY_SCREENSHOT 0xFA
-#define KEY_FUN 0xF9
+#define KEY_SCREENSHOT 0xFA 
 
 //customs keys for module control
-#define KEY_MOD_1 0xF8  //deply arm (servo) for mouse charge
-#define KEY_MOD_2 0xF7  //retract arm for mouse charge
-#define KEY_MOD_3 0xF6  //cycle between Clock, AV-RK MK2 logo, WPM/CPM count, and Heart rate monitor (smol OLED screen)/
-#define KEY_MOD_4 0xF5  //cycle between compact display mode (one line for RTC time, one for wpm, one for temperature, one for humidity), normal display mode (just the temps and humidity) and fun mode (just displays random things "hollywood" style)
-#define KEY_MOD_5 0xF4  //not assigned
-#define KEY_MOD_6 0xF3  //not assigned
-#define KEY_MOD_7 0xF4
+#define KEY_MOD_1 0xF9  
+#define KEY_MOD_2 0xF8  
+#define KEY_MOD_3 0xF7  
+#define KEY_MOD_4 0xF6  
+#define KEY_MOD_5 0xF5  
+#define KEY_MOD_P 0xFC  
+#define KEY_MOD_M 0xFD
 
 
-// Define the IO expander objects
+//LED variables
+const uint8_t ledPin = 0;         
+const uint8_t numLeds = 95;     
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(numLeds, ledPin, NEO_GRB + NEO_KHZ800);
+uint8_t currentBrightness = 50; 
+uint8_t currentKeyMod = 0;
+
+
+// Define the IO expander objects and the number of keys per expander
 PCA9505_06 NUMPAD;
 PCA9505_06 LEFT;
 PCA9505_06 RIGHT;
-const int ledPin = 0;  // the number of the neopixel strip
-const int numLeds = 95;
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(numLeds, ledPin, NEO_GRB + NEO_KHZ800);
-
-const uint8_t numKeys = 40;  // Assuming each expander has 40 pins
-
-const int DEBOUNCE_DELAY = 200;
-
+const uint8_t numKeys = 40;
 
 
 char keyMapLEFT[numKeys] = {
@@ -56,7 +52,6 @@ char keyMapLEFT[numKeys] = {
   KEY_F5, '6', 'y', 'h', 'b',
   KEY_F6, '7'
 };
-
 char keyMapLEFTALT[numKeys] = {
   KEY_ESC, '`', KEY_TAB, KEY_CAPS_LOCK, KEY_LEFT_SHIFT, KEY_LEFT_CTRL,
   '1', 'q', 'a', KEY_CHEVRON_L, KEY_LEFT_GUI,
@@ -78,8 +73,9 @@ char keyMapNUMPADALT[numKeys] = {
   KEY_KP_0,
   KEY_PAGE_UP, KEY_KP_SLASH, KEY_KP_8, KEY_MOD_5, KEY_MOD_2,
   KEY_HOME, KEY_KP_ASTERISK, KEY_KP_9, KEY_KP_6, KEY_MOD_3, KEY_KP_DOT,
-  KEY_MOD_6, KEY_MOD_7, KEY_KP_ENTER
+  KEY_MOD_M, KEY_MOD_P, KEY_KP_ENTER
 };
+
 char keyMapRIGHT[numKeys] = {
   'u', 'j', 'n', ' ',
   KEY_F7, '8', 'i', 'k', 'm',
@@ -98,7 +94,7 @@ char keyMapRIGHTALT[numKeys] = {
   KEY_F10, '-', '[', '\'', '/', KEY_RIGHT_ALT,
   KEY_F11, '=', ']', '\\', KEY_RIGHT_SHIFT, KEY_MENU,
   KEY_F12, KEY_BACKSPACE, KEY_RETURN, KEY_RIGHT_CTRL,
-  KEY_PRINT_SCREEN, KEY_NUM_LOCK, KEY_KP_7, KEY_MOD_4, KEY_MOD_1
+  KEY_SCREENSHOT, KEY_NUM_LOCK, KEY_KP_7, KEY_MOD_4, KEY_MOD_1
 
 };
 
@@ -109,7 +105,6 @@ bool keyStateR[numKeys] = { 0 };
 bool isShiftPressed = false;
 bool isCapsLockOn = false;
 bool initialDelayPassed = false;
-bool funTypingModeActive = false;
 
 unsigned long lastPressTime;
 unsigned long lastToggleTime = 0;
@@ -127,15 +122,11 @@ uint32_t Wheel(byte WheelPos);
 
 
 
-
-
 void setup() {
-
+  // Initialize the LEDs
   strip.begin();
-  strip.setBrightness(10);
+  strip.setBrightness(currentBrightness);
 
-  // Initialize serial communication
-  Serial.begin(9600);
 
   // Initialize the IO expanders
   NUMPAD.begin(0x23);  // Adjust the address as needed
@@ -151,12 +142,20 @@ void setup() {
 }
 
 void loop() {
-  rainbow(10);
-  bool funcKeyPressed = ((LEFT.digitalRead(35) == 0) || (RIGHT.digitalRead(8)) == 0);
+  // Assign the Function Key
+  bool funcKeyPressed = ((LEFT.digitalRead(22) == 0));
 
+  // Check all the expanders with their keymaps and keystates
   checkKeys(NUMPAD, keyMapNUMPAD, keyMapNUMPADALT, keyStateNP, funcKeyPressed);
   checkKeys(LEFT, keyMapLEFT, keyMapLEFTALT, keyStateL, funcKeyPressed);
   checkKeys(RIGHT, keyMapRIGHT, keyMapRIGHTALT, keyStateR, funcKeyPressed);
+
+
+  // Do the rainbow wave if called
+  
+  if (currentKeyMod == 2) {
+    rainbow(1); // Keep the rainbow effect running
+  }
 }
 
 /**
@@ -182,9 +181,6 @@ void checkKeys(PCA9505_06& expander, char* keyMap, char* funcKeyMap, bool* keySt
     if (isPressed != keyState[i]) {
       keyState[i] = isPressed;
       switch (key) {
-        case KEY_FUN:
-          funTypingModeActive = !funTypingModeActive;
-          break;
         case KEY_SCREENSHOT:
           if (isPressed) {
             Keyboard.press(KEY_LEFT_GUI);
@@ -213,27 +209,53 @@ void checkKeys(PCA9505_06& expander, char* keyMap, char* funcKeyMap, bool* keySt
           }
           break;
         case KEY_MOD_1:
-        //Default zone lighting
+          currentKeyMod = 1;
           break;
         case KEY_MOD_2:
-        //rainbow wave
+          currentKeyMod = 2;
           break;
         case KEY_MOD_3:
-        //green lighting
+          for(int i = 0; i < strip.numPixels(); i++) {
+            strip.setPixelColor(i, strip.Color(0, 255, 0)); // Set all pixels to green
+          }
+          
+          strip.setBrightness(currentBrightness);
+          strip.show();
+          currentKeyMod = 3;
           break;
         case KEY_MOD_4:
-        //white lighting
-          break;
+          for(int i = 0; i < strip.numPixels(); i++) {
+            strip.setPixelColor(i, strip.Color(255, 255, 255)); // Set all pixels to white
+          }
+          
+          strip.setBrightness(currentBrightness);
+          strip.show();
+          break; 
+          currentKeyMod = 4;
         case KEY_MOD_5:
-        //off 
+          for(int i = 0; i < strip.numPixels(); i++) {
+            strip.setPixelColor(i, strip.Color(0, 0, 0)); // Turn off all pixels
+          }
+          
+          strip.setBrightness(currentBrightness);
+          strip.show();
+          currentKeyMod = 5;
           break;
-        case KEY_MOD_6:
-          //brightness ctrl (-)
-          break;
-        case KEY_MOD_7:
-          //brightness ctrl (+)
-          break;
+        case KEY_MOD_P: // Increase brightness
+            currentBrightness += BRIGHTNESS_STEP; // Adjust the step size as needed
+            if (currentBrightness > MAX_BRIGHTNESS) 
+              currentBrightness = MAX_BRIGHTNESS; // Ensure the brightness doesn't exceed MAX_BRIGHTNESS
+            strip.setBrightness(currentBrightness);
+            strip.show(); // Apply the new brightness
+            break;
 
+        case KEY_MOD_M: // Decrease brightness
+            currentBrightness -= BRIGHTNESS_STEP; // Adjust the step size as needed
+            if (currentBrightness < MIN_BRIGHTNESS) 
+              currentBrightness = MIN_BRIGHTNESS; // Ensure the brightness doesn't drop below MIN_BRIGHTNESS
+            strip.setBrightness(currentBrightness);
+            strip.show(); // Apply the new brightness
+            break;
 
         default:
           if (isPressed) {
@@ -250,24 +272,15 @@ void checkKeys(PCA9505_06& expander, char* keyMap, char* funcKeyMap, bool* keySt
     }
   }
 
-  if (funTypingModeActive) {
-    if (millis() - lastToggleTime > 150) {
-      Keyboard.press(KEY_CAPS_LOCK);
-      Keyboard.release(KEY_CAPS_LOCK);
-      lastToggleTime = millis();
-    }
-  }
-
   //If you press a key once, it waits for INITIAL_DELAY, then if the key is still pressed, it spams it with a delay of REPEAT_DELAY in between each key press.
   if (lastKeyPressed != 255 && keyState[lastKeyPressed] && ((millis() - lastPressTime > INITIAL_DELAY && !initialDelayPassed) || (initialDelayPassed && millis() - lastPressTime > REPEAT_DELAY))) {
     char key = funcKeyPressed ? funcKeyMap[lastKeyPressed] : keyMap[lastKeyPressed];
-    if (key != MOUSE_LEFT_CLICK && key != MOUSE_RIGHT_CLICK && key != MOUSE_SCROLL_UP && key != MOUSE_SCROLL_DOWN) {
       Keyboard.release(key);
       Keyboard.press(key);
       lastPressTime = millis();
       initialDelayPassed = true;
     }
-  }
+
 }
 
 void rainbow(uint8_t wait) {
