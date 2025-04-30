@@ -1,0 +1,81 @@
+
+/* General layout */
+body {
+    background-color: #ffffff;
+    color: #000000;
+    font-family: 'Lucida Console', 'Courier New', monospace; /* fallback if 'ISOCPEUR' not found */
+    font-family: 'ISOCPEUR', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+/* Title area */
+#titlearea {
+    background-color: #f5f5f5;
+    border-bottom: 2px solid #2F5597;
+    padding: 10px 20px;
+}
+
+#titlearea h1, #titlearea h2, #titlearea h3 {
+    font-weight: bold;
+    border-bottom: 2px solid #2F5597;
+    color: #2F5597;
+    margin: 0;
+    padding-bottom: 5px;
+}
+
+/* Sidebar navigation */
+#nav-tree {
+    background-color: #eaeaea;
+    border-right: 1px solid #cccccc;
+}
+
+/* Code blocks */
+pre.fragment {
+    background-color: #f0f0f0;
+    border: 1px solid #cccccc;
+    padding: 10px;
+    font-family: 'ISOCPEUR', monospace;
+    font-size: 13px;
+    overflow-x: auto;
+}
+
+/* Member declarations */
+.memberdecls .memname {
+    color: #2F5597;
+    font-weight: bold;
+}
+
+/* Tables */
+.table, table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.table th, .table td, table th, table td {
+    border: 1px solid #cccccc;
+    padding: 8px;
+    text-align: left;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+    color: #2F5597;
+    font-weight: bold;
+    border-bottom: 1px solid #2F5597;
+    padding-bottom: 4px;
+    margin-top: 20px;
+}
+
+/* Footer */
+.footer {
+    font-size: 12px;
+    color: #666666;
+    padding: 10px;
+    text-align: center;
+    border-top: 1px solid #cccccc;
+    margin-top: 30px;
+}

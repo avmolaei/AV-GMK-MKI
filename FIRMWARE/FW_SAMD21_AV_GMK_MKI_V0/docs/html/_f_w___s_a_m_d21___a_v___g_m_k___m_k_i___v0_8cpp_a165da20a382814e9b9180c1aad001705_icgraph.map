@@ -1,0 +1,5 @@
+<map id="rainbow" name="rainbow">
+<area shape="rect" id="Node000001" title="Generates a rainbow animation across the entire strip of LEDs." alt="" coords="99,5,165,32"/>
+<area shape="rect" id="Node000002" href="$_f_w___s_a_m_d21___a_v___g_m_k___m_k_i___v0_8cpp.html#afe461d27b9c48d5921c00d521181f12f" title="void loop(), infinite loop function" alt="" coords="5,5,51,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="83,21,51,21,51,16,83,16"/>
+</map>

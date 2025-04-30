@@ -1,0 +1,9 @@
+<map id="loop" name="loop">
+<area shape="rect" id="Node000001" title="void loop(), infinite loop function" alt="" coords="5,31,51,57"/>
+<area shape="rect" id="Node000002" href="$_f_w___s_a_m_d21___a_v___g_m_k___m_k_i___v0_8cpp.html#a456c92bd38c33b10ce243b3057a7d27e" title="Checks the state of each key connected to a specific PCA9505 chip, triggers key press/release actions..." alt="" coords="99,5,185,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="51,36,83,29,84,34,52,42"/>
+<area shape="rect" id="Node000003" href="$_f_w___s_a_m_d21___a_v___g_m_k___m_k_i___v0_8cpp.html#a165da20a382814e9b9180c1aad001705" title="Generates a rainbow animation across the entire strip of LEDs." alt="" coords="109,56,175,83"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="52,46,94,56,93,61,51,52"/>
+<area shape="rect" id="Node000004" href="$_f_w___s_a_m_d21___a_v___g_m_k___m_k_i___v0_8cpp.html#a953424274959481c9d46b57d249b3722" title="Calculates a color value given a position within a rainbow cycle." alt="" coords="233,56,291,83"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="175,67,218,67,218,72,175,72"/>
+</map>
