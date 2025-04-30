@@ -14,19 +14,20 @@ Compatible with MX style switches.
   
   
 
-## TODO: shit to fix:
+## TODO: shit to do still:
 
   
 
-FW: only the left PCA is functional now. No RGB modes besides a default rainbow. Also fix the same shit as the AV-RK MK2
+FW: Most keyboard logic has been implemented, ported from AV-RK MK2. Notorious "cannot hold down key" bug of AV-RK MK2 has been fixed. LED modese have been implemented as follows: 
 
-Add LED modes:
+
 
 One mode should be off, duh. (5)
 
 One mode should be green lighting (3)
 
 One mode should be a lighting per zone (e.g one color for Fn keys, one color for alphanumeric, etc.). This is the default lighting mode upon power up (1 )
+- NB: I am a bit lazy to implement a logic to modify on the fly the colors for each zone, so this will be hardcoded. A good improvement would be to do that on the fly and store the color scheme. 
 
 One mode should be the rainbow wave.  (2)
 
@@ -49,6 +50,8 @@ more LEDs should be added. while 1 LED/key is standard on most keyboard, it feel
 
 Add kailh choc footprints next to the MX holes for optimal switch compatibility
 
+Implement the knob functionnality for volume controls. 
+
   
 
-CAD: do cad, duh.
+CAD: finish cad, duh.

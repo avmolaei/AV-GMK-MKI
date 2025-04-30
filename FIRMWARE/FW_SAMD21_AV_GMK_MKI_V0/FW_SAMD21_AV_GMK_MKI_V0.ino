@@ -1,7 +1,32 @@
+/*-------------------------------------------------------------------------
+FW_SAMD21_AV_GMK_MKI_V0.ino, the firmware of the AV-GMK MKI keyboard.
+    Copyright (C) 2024    AVlabs (Avesta MOLAEI)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-------------------------------------------------------------------------*/
+
+//------------------LIBRARIES------------------
+//PCA9505_9506.h: Lib for the NXP PCA9505 IO Expander through I2C
+//Keyboard.h:     Classic Arduino Keyboard lib
+//Neopixel.h:     Classic Adafruit WS2812B-like LED control
 #include <PCA9505_9506.h>
 #include <Keyboard.h> 
 #include <Adafruit_NeoPixel.h>
 
+
+
+//------------------DEFINES------------------------------------------------------
 //delays for the key actuation
 #define INITIAL_DELAY 250
 #define REPEAT_DELAY 5
@@ -26,31 +51,22 @@
 #define KEY_MOD_P 0xFC  
 #define KEY_MOD_M 0xFD
 
-
-//LED variables
-const uint8_t ledPin = 0;         
-const uint8_t numLeds = 95;     
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(numLeds, ledPin, NEO_GRB + NEO_KHZ800);
-uint8_t currentBrightness = 50; 
-uint8_t currentKeyMod = 0;
-
-
 // Define the IO expander objects and the number of keys per expander
 PCA9505_06 NUMPAD;
 PCA9505_06 LEFT;
 PCA9505_06 RIGHT;
 const uint8_t numKeys = 40;
 
-
+//Default and Alternative Keymaps for all 3 PCAs
 char keyMapLEFT[numKeys] = {
-  KEY_ESC, '`', KEY_TAB, KEY_CAPS_LOCK, KEY_LEFT_SHIFT, KEY_LEFT_CTRL,
+  KEY_ESC,  '`', KEY_TAB, KEY_CAPS_LOCK, KEY_LEFT_SHIFT, KEY_LEFT_CTRL,
   '1', 'q', 'a', KEY_CHEVRON_L, KEY_LEFT_GUI,
-  KEY_F1, '2', 'w', 's', 'z', KEY_LEFT_ALT,
-  KEY_F2, '3', 'e', 'd', 'x', KEY_FUNCTION,
-  KEY_F3, '4', 'r', 'f', 'c',
-  KEY_F4, '5', 't', 'g', 'v',
-  KEY_F5, '6', 'y', 'h', 'b',
-  KEY_F6, '7'
+  KEY_F1,   '2', 'w', 's', 'z', KEY_LEFT_ALT,
+  KEY_F2,   '3', 'e', 'd', 'x', KEY_FUNCTION,
+  KEY_F3,   '4', 'r', 'f', 'c',
+  KEY_F4,   '5', 't', 'g', 'v',
+  KEY_F5,   '6', 'y', 'h', 'b',
+  KEY_F6,   '7'
 };
 char keyMapLEFTALT[numKeys] = {
   KEY_ESC, '`', KEY_TAB, KEY_CAPS_LOCK, KEY_LEFT_SHIFT, KEY_LEFT_CTRL,
@@ -98,30 +114,40 @@ char keyMapRIGHTALT[numKeys] = {
 
 };
 
+//Keystate maps
 bool keyStateNP[numKeys] = { 0 };
 bool keyStateL[numKeys] = { 0 };
 bool keyStateR[numKeys] = { 0 };
 
+//General Keyboard variables
 bool isShiftPressed = false;
 bool isCapsLockOn = false;
-bool initialDelayPassed = false;
+//bool initialDelayPassed = false;
+//unsigned long lastPressTime;
+//unsigned long lastToggleTime = 0;
+//uint8_t lastKeyPressed = 255;
 
-unsigned long lastPressTime;
-unsigned long lastToggleTime = 0;
-uint8_t lastKeyPressed = 255;
-
-
+//LED variables
+const uint8_t ledPin = 0;         
+const uint8_t numLeds = 95;     
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(numLeds, ledPin, NEO_GRB + NEO_KHZ800);
+uint8_t currentBrightness = 50; 
+uint8_t currentKeyMod = 0;
 uint32_t lastUpdate = 0;  // Last update of position
 uint16_t j = 0;           // Position in the rainbow
 
 
-
+//------------------PROTOTYPES------------------
 void checkKeys(PCA9505_06& expander, char* keyMap, char* funcKeyMap, bool* keyState, bool funcKeyPressed);
 void rainbow(uint8_t wait);
 uint32_t Wheel(byte WheelPos);
+//---------------------------------------------
 
 
-
+//------------------FUNCTIONS------------------
+/**
+ * @brief void setup(), init function
+*/
 void setup() {
   // Initialize the LEDs
   strip.begin();
@@ -141,6 +167,9 @@ void setup() {
   }
 }
 
+/**
+ * @brief void loop(), infinite loop function
+*/
 void loop() {
   // Assign the Function Key
   bool funcKeyPressed = ((LEFT.digitalRead(22) == 0));
@@ -152,7 +181,7 @@ void loop() {
 
 
   // Do the rainbow wave if called
-  
+
   if (currentKeyMod == 2) {
     rainbow(1); // Keep the rainbow effect running
   }
@@ -242,19 +271,19 @@ void checkKeys(PCA9505_06& expander, char* keyMap, char* funcKeyMap, bool* keySt
           currentKeyMod = 5;
           break;
         case KEY_MOD_P: // Increase brightness
-            currentBrightness += BRIGHTNESS_STEP; // Adjust the step size as needed
+            currentBrightness += BRIGHTNESS_STEP;
             if (currentBrightness > MAX_BRIGHTNESS) 
-              currentBrightness = MAX_BRIGHTNESS; // Ensure the brightness doesn't exceed MAX_BRIGHTNESS
+              currentBrightness = MAX_BRIGHTNESS; // Ensure no overflow
             strip.setBrightness(currentBrightness);
             strip.show(); // Apply the new brightness
             break;
 
         case KEY_MOD_M: // Decrease brightness
-            currentBrightness -= BRIGHTNESS_STEP; // Adjust the step size as needed
+            currentBrightness -= BRIGHTNESS_STEP; 
             if (currentBrightness < MIN_BRIGHTNESS) 
-              currentBrightness = MIN_BRIGHTNESS; // Ensure the brightness doesn't drop below MIN_BRIGHTNESS
+              currentBrightness = MIN_BRIGHTNESS; // Ensure no underflow
             strip.setBrightness(currentBrightness);
-            strip.show(); // Apply the new brightness
+            strip.show(); 
             break;
 
         default:
@@ -272,35 +301,66 @@ void checkKeys(PCA9505_06& expander, char* keyMap, char* funcKeyMap, bool* keySt
     }
   }
 
-  //If you press a key once, it waits for INITIAL_DELAY, then if the key is still pressed, it spams it with a delay of REPEAT_DELAY in between each key press.
-  if (lastKeyPressed != 255 && keyState[lastKeyPressed] && ((millis() - lastPressTime > INITIAL_DELAY && !initialDelayPassed) || (initialDelayPassed && millis() - lastPressTime > REPEAT_DELAY))) {
-    char key = funcKeyPressed ? funcKeyMap[lastKeyPressed] : keyMap[lastKeyPressed];
-      Keyboard.release(key);
-      Keyboard.press(key);
-      lastPressTime = millis();
-      initialDelayPassed = true;
-    }
+ //2025 EDIT: DO NOT IMPLEMENT THIS!!! THIS BEHAVIOR IS ALREADY IMPLEMENTED IN KEYBOARD.H, AND REDEFINING IT MAKES THE KEYBOARD UNEUSABLE INGAME. 
+   //Comenting it out works. 
+   /*
+   //If you press a key once, it waits for INITIAL_DELAY, then if the key is still pressed, it spams it with a delay of REPEAT_DELAY in between each key press.
+   if (lastKeyPressed != 255 && keyState[lastKeyPressed] && ((millis() - lastPressTime > INITIAL_DELAY && !initialDelayPassed) || (initialDelayPassed && millis() - lastPressTime > REPEAT_DELAY))) {
+     char key = funcKeyPressed ? funcKeyMap[lastKeyPressed] : keyMap[lastKeyPressed];
+     if (key != MOUSE_LEFT_CLICK && key != MOUSE_RIGHT_CLICK && key != MOUSE_SCROLL_UP && key != MOUSE_SCROLL_DOWN) {
+       Keyboard.release(key);
+       Keyboard.press(key);
+       lastPressTime = millis();
+       initialDelayPassed = true;
+     }
+   }*/
 
 }
 
+/**
+ * @brief Generates a rainbow animation across the entire strip of LEDs.
+ * 
+ * This function creates a moving rainbow effect by cycling through all colors
+ * across the strip's LEDs. The function calculates a color for each LED based
+ * on its position and the current state of the animation cycle, creating a
+ * continuous rainbow that moves along the strip. The animation speed can be
+ * adjusted by changing the 'wait' parameter value.
+ *
+ * @param wait The time in milliseconds to wait before moving the rainbow to the
+ *             next position. A smaller value results in a faster animation.
+ * @note this function comes from mattnupen, https://codebender.cc/sketch:57804#NeoPixel%20Function%20Sample.ino
+ */
 void rainbow(uint8_t wait) {
   uint32_t currentMillis = millis();
   if (currentMillis - lastUpdate > wait) {
-    lastUpdate = currentMillis;  // Save the last update time
-
-    // Only update the LED strip if the specified 'wait' time has passed
+    lastUpdate = currentMillis;
     for (uint16_t i = 0; i < strip.numPixels(); i++) {
       strip.setPixelColor(i, Wheel((i * 1 + j) & 255));
     }
     strip.show();
-
-    // Increment 'j', reset if it reaches 256
     if (++j >= 256) {
       j = 0;
     }
   }
 }
 
+/**
+ * @brief Calculates a color value given a position within a rainbow cycle.
+ * 
+ * This function generates a smooth gradient of colors transitioning from red to
+ * green to blue and back to red, creating a rainbow effect. The position within
+ * the cycle is specified by 'WheelPos', which ranges from 0 to 255. The
+ * function divides this range into three equal parts, each corresponding to a
+ * transition between two primary colors.
+ *
+ * @param WheelPos The position within the rainbow cycle, ranging from 0 to 255.
+ *                 This value determines the color returned by the function,
+ *                 creating a seamless transition across a set of colors.
+ * @return The 32-bit color value in RGB format that corresponds to the given
+ *         position within the rainbow cycle. This color can be used to set an
+ *         LED's color on a strip.
+* @note this function comes from mattnupen, https://codebender.cc/sketch:57804#NeoPixel%20Function%20Sample.ino
+ */
 uint32_t Wheel(byte WheelPos) {
   if (WheelPos < 85) {
     return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
