@@ -1,7 +1,6 @@
 #include <PCA9505_9506.h>
 #include <Keyboard.h> 
 #include <Adafruit_NeoPixel.h> 
-
 //delays for the key actuation
 #define INITIAL_DELAY 250
 #define REPEAT_DELAY 5
@@ -193,11 +192,11 @@ void loop() {
     applyKeymapLighting(keyMapNUMPAD, numKeys, startLedIndexNumpad); 
 
 
-  } 
+  } /*
 unsigned long currentTime = millis();
 if (currentTime - lastTime >= interval) {
   int potValue = analogRead(potPin);
-  int volumeLevel = map(potValue, 0, 1023, 0, 100); // plage 0–100 pour plus de stabilité
+  int volumeLevel = map(potValue, 0, 1023, 0, 10000); // plage 0–100 pour plus de stabilité
 
   if (abs(volumeLevel - lastVolume) > 2) { // pour éviter les petits changements
     if (volumeLevel > lastVolume) {
@@ -213,7 +212,7 @@ if (currentTime - lastTime >= interval) {
     lastVolume = volumeLevel;
     lastTime = currentTime;
   }
-}
+}*/
 
 }
 
